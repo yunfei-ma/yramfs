@@ -12,4 +12,12 @@
 #define DBG_PRINT(x, ...); do {} while(0);
 #endif
 
+typedef void (*free_func_t)(void*);
+
+typedef struct _yramfs_vector_t{
+    struct _yramfs_vector_t     *pNext;
+    uint32_t                     data;
+    free_func_t                  free;
+}yramfs_vector_t;
+
 #endif

@@ -7,13 +7,7 @@
 //  table 's_ops' field and the root dentry s_root'.' The are
 //  initialized at the mounting time.
 
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/pagemap.h>
-#include <linux/fs.h>
-#include <asm/atomic.h>
-#include <asm/uaccess.h>
+#include "yramfs_common.h"
 
 /*
  * @brief this file initialiazes the super block on mounting time
@@ -63,21 +57,13 @@ static void yramfs_super_put(struct super_block* sb)
 {
 }
 
-static void yramfs_super_write(struct super_block *sb)
-{
-}
-
 static const struct super_operations yramfs_ops = {
-	.statfs		= yramfs_statfs,
-	.alloc_inode	= yramfs_inode_delete,
-	.put_super  = yramfs_super_put
+	.put_super  = yramfs_super_put,
     .alloc_inode = yramfs_inode_alloc,
     .destroy_inode = yramfs_inode_destroy,
-    .read_inode = yramfs_inode_read,
     .write_inode = yramfs_inode_write,
     .delete_inode = yramfs_inode_delete,
     .put_super = yramfs_super_put,
-    .write_super = yramfs_super_write,
     .statfs = yramfs_statfs
 
 };

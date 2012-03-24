@@ -13,6 +13,16 @@
 MODULE_LICENSE("Yunfei Task @ BOSCH");
 
 /*
+ * @brief this function allocates a ramfs_inode_into_t which has an inode
+ *        embeded
+ *
+ */
+struct inode* ramfs_inode_alloc(struct super_block* sb)
+{
+    
+}
+
+/*
  * @brief This function is called when the given inode is
  *  to be read
  *  it convert the given inode number into block number and

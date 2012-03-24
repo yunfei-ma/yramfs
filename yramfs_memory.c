@@ -9,35 +9,41 @@
 #include <stdio.h>
 #include "yramfs_utils.h"
 
+static struct kmem_cache *pRamfsPool = NULL;
 
-struct inode* yramfs_inode_alloc(struct inode *parentNode,
-                                struct dentry *dentry,
-                                int mode)
+typedef struct {
+    struct kmem_cache  *pRamfsPool;
+    uint32_t            size;
+}ramfs_memory;
+
+int yramfs_memory_initialize(void *data)
 {
-	yramfs_inode_info_t  *pNodeInfo = NULL;
-    struct super_block  *sb = parentNode->i_sb;
-    struct inode        *pNode = NULL;
-    
-	DBG_PRINT("%s", __FUNCTION__);
-	pNodeInfo = kmem_cache_alloc(pRamfsInodeCache, SLAB_KERNEL);
-    if (NULL == pNodeInfo) {
-    	DBG_PRINT("alloc memory failed");
-    	return NULL;
-    }
-    
-    pNode = pNodeInfo->vfs_inode;
-    pNode->i_mode = mode;
-    pNode->i_uid = current_fsuid();
-    pNode->i_gid = current_fsgid();
-    pNode->i_mapping->backing_dev_info = &dlmfs_backing_dev_info;
-    pNode->i_atime = pNode->i_mtime = pNode->i_ctime = CURRENT_TIME;
-    
-    return &pNodeInfo->vfs_inode;
+	pRamfsPool = kmem_cache_create("ramfsPool",
+                                   sizeof(yramfs_inode_info_t),
+                                   0, SLAB_PANIC, init_once);
+	return 0;
 }
 
-void yramfs_inode_destroy(struct inode* inode)
+void yramfs_memory_deinitialize(void)
 {
-    DBG_PRINT("%s", __FUNCTION__);
-    yramfs_inode_info_t *pNode = (yramfs_inode_info_t*)inode;
-	kmem_cache_free(pRamfsInodeCache, pNode);
+	kmem_cache_destroy(pRamfsPool);
+}
+
+void *yramfs_alloc(uint32_t size, char *fileName, int lineNumber)
+{
+    void *ptr = NULL;
+    if (NULL == pRamfsPool) {
+        DBG_PRINT("pool is not initialized");
+        return NULL;
+    }
+    
+    ptr = kmem_cache_alloc(pRamfsPool, SLAB_KERNEL);
+    DBG_PRINT("mem -- alloc %x, in-%s-at-%d", ptr, size, fileName, lineNumber);
+    return ptr;
+}
+
+void yramfs_free(void *ptr)
+{
+    DBG_PRINT("mem -- free %x", ptr);
+    kmem_cache_free(pRamfsPool, ptr);
 }

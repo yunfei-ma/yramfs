@@ -8,4 +8,14 @@ typedef struct yramfs_sb_info {
     uint32_t     nodeNum;       /* total number of inode */
 }yramfs_sb_info;
 
+
+/*
+ * @brief this file initialiazes the super block on mounting time
+ *      with 's_op' and 's_root' initialized
+ *
+ * @param sb    super_block instance to be initialized
+ * @param data  
+ * @param silent
+ */
+int yramfs_fill_super(struct super_block *sb, void *data, int silent);
 #endif
