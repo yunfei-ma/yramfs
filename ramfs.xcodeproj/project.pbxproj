@@ -6,10 +6,45 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXFileReference section */
+		1880CFD5151D99B7009A4321 /* yramfs_address_space.c */ = {isa = PBXFileReference; lineEnding = 2; path = yramfs_address_space.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		1880CFD6151D99B7009A4321 /* yramfs_address_space.h */ = {isa = PBXFileReference; lineEnding = 2; path = yramfs_address_space.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		1880CFD7151D99B7009A4321 /* yramfs_config.h */ = {isa = PBXFileReference; lineEnding = 2; path = yramfs_config.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		1880CFD8151D99B7009A4321 /* yramfs_dir.c */ = {isa = PBXFileReference; lineEnding = 2; path = yramfs_dir.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		1880CFD9151D99B7009A4321 /* yramfs_dir.h */ = {isa = PBXFileReference; path = yramfs_dir.h; sourceTree = "<group>"; };
+		1880CFDA151D99B7009A4321 /* yramfs_file.c */ = {isa = PBXFileReference; path = yramfs_file.c; sourceTree = "<group>"; };
+		1880CFDB151D99B7009A4321 /* yramfs_file.h */ = {isa = PBXFileReference; path = yramfs_file.h; sourceTree = "<group>"; };
+		1880CFDC151D99B7009A4321 /* yramfs_inode.c */ = {isa = PBXFileReference; path = yramfs_inode.c; sourceTree = "<group>"; };
+		1880CFDD151D99B7009A4321 /* yramfs_inode.h */ = {isa = PBXFileReference; path = yramfs_inode.h; sourceTree = "<group>"; };
+		1880CFDE151D99B7009A4321 /* yramfs_module.c */ = {isa = PBXFileReference; lineEnding = 0; path = yramfs_module.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		1880CFDF151D99B7009A4321 /* yramfs_super.c */ = {isa = PBXFileReference; lineEnding = 2; path = yramfs_super.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		1880CFE0151D99B7009A4321 /* yramfs_super.h */ = {isa = PBXFileReference; lineEnding = 2; path = yramfs_super.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		1880CFE1151D99B7009A4321 /* yramfs_utils.c */ = {isa = PBXFileReference; path = yramfs_utils.c; sourceTree = "<group>"; };
+		1880CFE2151D99B7009A4321 /* yramfs_utils.h */ = {isa = PBXFileReference; path = yramfs_utils.h; sourceTree = "<group>"; };
+		1880CFE3151D99CC009A4321 /* readme */ = {isa = PBXFileReference; lastKnownFileType = text; path = readme; sourceTree = "<group>"; };
+		1880D2B9151DC572009A4321 /* yramfs_memory.c */ = {isa = PBXFileReference; lineEnding = 0; path = yramfs_memory.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		1880CFCC151D9665009A4321 = {
 			isa = PBXGroup;
 			children = (
+				1880D2B9151DC572009A4321 /* yramfs_memory.c */,
+				1880CFE3151D99CC009A4321 /* readme */,
+				1880CFD5151D99B7009A4321 /* yramfs_address_space.c */,
+				1880CFD6151D99B7009A4321 /* yramfs_address_space.h */,
+				1880CFD7151D99B7009A4321 /* yramfs_config.h */,
+				1880CFD8151D99B7009A4321 /* yramfs_dir.c */,
+				1880CFD9151D99B7009A4321 /* yramfs_dir.h */,
+				1880CFDA151D99B7009A4321 /* yramfs_file.c */,
+				1880CFDB151D99B7009A4321 /* yramfs_file.h */,
+				1880CFDC151D99B7009A4321 /* yramfs_inode.c */,
+				1880CFDD151D99B7009A4321 /* yramfs_inode.h */,
+				1880CFDE151D99B7009A4321 /* yramfs_module.c */,
+				1880CFDF151D99B7009A4321 /* yramfs_super.c */,
+				1880CFE0151D99B7009A4321 /* yramfs_super.h */,
+				1880CFE1151D99B7009A4321 /* yramfs_utils.c */,
+				1880CFE2151D99B7009A4321 /* yramfs_utils.h */,
 			);
 			sourceTree = "<group>";
 		};
