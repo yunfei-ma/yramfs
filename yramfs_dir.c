@@ -3,16 +3,7 @@
 //  Copyright (c) 2012 Yunfei. All rights reserved.
 //
 //  this file defines dir operations
-
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/pagemap.h>
-#include <linux/fs.h>
-#include <linux/buffer_head.h>
-#include <linux/smp_lock.h>
-#include <asm/atomic.h>
-#include <asm/uaccess.h>
+#include "yramfs_common.h"
 #include "yramfs_inode.h"
 #include "yramfs_utils.h"
 
@@ -30,7 +21,7 @@
 static int yramfs_dir_mknod(struct inode *dir, struct dentry *dentry,
                             int mode, dev_t dev)
 {
-	struct inode * inode = yramfs_get_inode(dir->i_sb, mode, dev);
+	struct inode * inode = yramfs_get_inode(dir->i_sb, dir, mode, dev);
 	int error = -ENOSPC;
     
 	if (inode) {
@@ -58,9 +49,10 @@ static int yramfs_dir_mknod(struct inode *dir, struct dentry *dentry,
  *
  * @returns error codes
  */
-static int yramfs_dir_mkdir(struct inode * dir, struct dentry * dentry, int mode)
+static int yramfs_dir_mkdir(struct inode * dir, struct dentry * dentry,
+                             int mode)
 {
-	int retval = ramfs_mknod(dir, dentry, mode | S_IFDIR, 0);
+	int retval = yramfs_dir_mknod(dir, dentry, mode | S_IFDIR, 0);
 	if (!retval)
 		dir->i_nlink++;
 	return retval;
@@ -81,9 +73,9 @@ static int yramfs_dir_mkdir(struct inode * dir, struct dentry * dentry, int mode
  * @returns error codes
  */
 static int yramfs_dir_create(struct inode *dir, struct dentry *dentry,
-                        const char symname)
+                            int mode, const char symname)
 {
-    return yramfs_mknode(dir, dentry, mode | S_INREG, 0);
+    return yramfs_dir_mknod(dir, dentry, mode | S_IFREG, 0);
 }
 
 /*
@@ -111,7 +103,7 @@ static int yramfs_dir_create(struct inode *dir, struct dentry *dentry,
 static struct dentry * yramfs_inode_lookup(struct inode *parent_inode,
                             struct dentry *entry, struct nameidata *name)
 {
-    DBG_PRINT(" looking up %s... ", dentry->d_name.name);
+    DBG_PRINT(" looking up %s... ", entry->d_name.name);
     /*
     if(parent_inode->i_ino != rkfs_root_inode->i_ino)
         return ERR_PTR(-ENOENT);
@@ -178,5 +170,4 @@ static struct inode_operations yramfs_dir_inode_operations = {
 const struct file_operations yramfs_dir_operations = {
     .read       = generic_read_dir,
     .readdir    = yramfs_dir_readdir,
-    .fsync      = simple_sync_file,
 };

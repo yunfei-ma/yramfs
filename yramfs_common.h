@@ -9,22 +9,24 @@
 
 #ifndef _yramfs_common_h
 #define _yramfs_common_h
+#include <linux/module.h>
+#include <linux/fs.h>
 #include <linux/pagemap.h>
-#include <linux/highmem.h>
-#include <linux/time.h>
 #include <linux/init.h>
 #include <linux/string.h>
-#include <linux/backing-dev.h>
-#include <linux/ramfs.h>
+#include <linux/blkdev.h>
+#include <linux/slab.h>
+#include <linux/cramfs_fs_sb.h>
+#include <linux/buffer_head.h>
+#include <linux/vfs.h>
+#include <linux/mutex.h>
+#include <linux/highmem.h>
+#include <linux/time.h>
 #include <linux/sched.h>
 #include <linux/parser.h>
 #include <linux/magic.h>
-#include <linux/slab.h>
 #include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/pagemap.h>
-#include <linux/fs.h>
+
 #include <asm/atomic.h>
 
 #include <asm/uaccess.h>

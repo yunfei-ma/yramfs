@@ -5,19 +5,11 @@
 //  this file defines inode operations for super block, it
 //  provides basic functions to manage an inode life time
 
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/pagemap.h>
-#include <linux/fs.h>
-#include <linux/buffer_head.h>
-#include <linux/smp_lock.h>
-#include <asm/atomic.h>
-#include <asm/uaccess.h>
+#include "yramfs_common.h"
 #include "yramfs_inode.h"
 #include "yramfs_utils.h"
 
-MODULE_LICENSE("Yunfei's Task @ BOSCH");
+MODULE_LICENSE("Yunfei");
 
 /*
  * @brief This function is called when the given inode is
@@ -28,37 +20,37 @@ MODULE_LICENSE("Yunfei's Task @ BOSCH");
  * @param aNode an instance of struct inode
  * @returns none
  */
-struct inode *yramfs_get_inode(struct super_block *sb, int mode, dev_t dev)
+struct inode *yramfs_get_inode(struct super_block *sb,
+				const struct inode *dir, int mode, dev_t dev)
 {
- 	struct inode * inode = new_inode(sb);
-    
+	struct inode * inode = new_inode(sb);
+
 	if (inode) {
-		inode->i_mode = mode;
-		inode->i_uid = current->fsuid;
-		inode->i_gid = current->fsgid;
-		inode->i_blksize = PAGE_CACHE_SIZE;
-		inode->i_blocks = 0;
-		inode->i_mapping->a_ops = &ramfs_aops;
-		inode->i_mapping->backing_dev_info = &ramfs_backing_dev_info;
+		inode->i_ino = get_next_ino();
+		inode_init_owner(inode, dir, mode);
+//		inode->i_mapping->a_ops = &ramfs_aops;
+//		inode->i_mapping->backing_dev_info = &ramfs_backing_dev_info;
+		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
+		mapping_set_unevictable(inode->i_mapping);
 		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
 		switch (mode & S_IFMT) {
-            default:
-                init_special_inode(inode, mode, dev);
-                break;
-            case S_IFREG:
-                inode->i_op = &ramfs_file_inode_operations;
-                inode->i_fop = &ramfs_file_operations;
-                break;
-            case S_IFDIR:
-                inode->i_op = &ramfs_dir_inode_operations;
-                inode->i_fop = &simple_dir_operations;
-                
-                /* directory inodes start off with i_nlink == 2 (for "." entry) */
-                inode->i_nlink++;
-                break;
-            case S_IFLNK:
-                inode->i_op = &page_symlink_inode_operations;
-                break;
+		default:
+			init_special_inode(inode, mode, dev);
+			break;
+		case S_IFREG:
+//			inode->i_op = &ramfs_file_inode_operations;
+//			inode->i_fop = &ramfs_file_operations;
+			break;
+		case S_IFDIR:
+//			inode->i_op = &ramfs_dir_inode_operations;
+//			inode->i_fop = &simple_dir_operations;
+
+			/* directory inodes start off with i_nlink == 2 (for "." entry) */
+			inc_nlink(inode);
+			break;
+		case S_IFLNK:
+//			inode->i_op = &page_symlink_inode_operations;
+			break;
 		}
 	}
 	return inode;
