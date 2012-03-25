@@ -3,7 +3,7 @@
 //  ramfs
 //
 //  Created by Yunfei on 12-3-24.
-//  Copyright (c) 2012年 Yunfei. All rights reserved.
+//  Copyright (c) 2012 Yunfei. All rights reserved.
 //
 //  This file is to register 'yramfs' file system to linux kernel
 //  with the data structure of 'struct file_system_type' which is

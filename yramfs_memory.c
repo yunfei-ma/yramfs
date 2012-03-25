@@ -9,18 +9,13 @@
 #include <stdio.h>
 #include "yramfs_utils.h"
 
-static struct kmem_cache *pRamfsPool = NULL;
-
-typedef struct {
-    struct kmem_cache  *pRamfsPool;
-    uint32_t            size;
-}ramfs_memory;
+struct kmem_cache  *pRamfsPool;
 
 int yramfs_memory_initialize(void *data)
 {
-	pRamfsPool = kmem_cache_create("ramfsPool",
+    pRamfsPool = kmem_cache_create("ramfsPool",
                                    sizeof(yramfs_inode_info_t),
-                                   0, SLAB_PANIC, init_once);
+                                   0, SLAB_PANIC, NULL, NULL);
 	return 0;
 }
 
@@ -29,7 +24,7 @@ void yramfs_memory_deinitialize(void)
 	kmem_cache_destroy(pRamfsPool);
 }
 
-void *yramfs_alloc(uint32_t size, char *fileName, int lineNumber)
+void *yramfs_alloc(uint32_t size)
 {
     void *ptr = NULL;
     if (NULL == pRamfsPool) {
@@ -38,7 +33,7 @@ void *yramfs_alloc(uint32_t size, char *fileName, int lineNumber)
     }
     
     ptr = kmem_cache_alloc(pRamfsPool, SLAB_KERNEL);
-    DBG_PRINT("mem -- alloc %x, in-%s-at-%d", ptr, size, fileName, lineNumber);
+    DBG_PRINT("mem -- alloc %x, %d", ptr, size);
     return ptr;
 }
 

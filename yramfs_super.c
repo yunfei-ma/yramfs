@@ -28,7 +28,7 @@ int yramfs_fill_super(struct super_block *sb, void *data, int silent)
     sb->s_fs_info = NULL; /* Filesystem private data */
 
     /* initialize root node */
-    sb->s_root = d_alloc_root(iget(sb,YRAMFS_ROOT_INODE_NUMBER));
+    sb->s_root = d_alloc_root(yramfs_get_inode());
     return 0;
 }
 
@@ -59,7 +59,6 @@ static void yramfs_super_put(struct super_block* sb)
 
 static const struct super_operations yramfs_ops = {
 	.put_super  = yramfs_super_put,
-    .alloc_inode = yramfs_inode_alloc,
     .destroy_inode = yramfs_inode_destroy,
     .write_inode = yramfs_inode_write,
     .delete_inode = yramfs_inode_delete,
