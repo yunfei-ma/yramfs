@@ -71,30 +71,4 @@ void yramfs_inode_delete(struct inode* aNode);
  */
 void yramfs_inode_truncate(struct inode* aNode);
 
-/*
- * @brief This function will be called when the kernel is resolving a path. The
- * lookup handler of the inode operation table of the parent inode is called to
- * resolve a child. Remember that the dentry for the root most inode is already
- * available in s_root field of the super block.
- *
- * For example, after mounting the file system under '/mnt/yramfs' if we want to
- * see the contents using 'ls /mnt/rkfs', the kernel has to create a file object
- * for the inode '/mnt/yramfs'. The kernel will create a file object with the
- * dentry of the root most inode of the file system. For the command
- * 'ls -l /mnt/rkfs/hello.txt', the kernel name lookup reaches the root most
- * inode and the lookup handler will be called to set the inode of 'hello.txt'.
- * The kernel allocates the dentry object and passes to the handler.
- * If an inode exists for the name component, the inode has to be added to the
- * dentry using d_add and NULL should be returned. If there is some problem, a
- * suitable error code has to be returned.
- *
- * @param parent_inode  the parent inode instance
- * @param dentry        a pear entry to be referenced for looking up
- *
- * @returns dentry
- */
-static struct dentry * yramfs_inode_lookup(struct inode *parent_inode,
-                                           struct dentry *dentry,
-                                           struct nameidata *nameidata);
-
 #endif

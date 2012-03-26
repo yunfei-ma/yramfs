@@ -1,4 +1,5 @@
 #include "yramfs_common.h"
+#include "yramfs_vector.h"
 
 /*
  * @brief this function create a vector object
@@ -13,8 +14,8 @@ int yramfs_vector_create(yramfs_vector_t **ppVector)
     pVector = (yramfs_vector_link_t*)kmalloc(sizeof(yramfs_vector_t),
                                              GFP_KERNEL);
     if (NULL == pVector) {
-        printf("malloc failed\n");
-        return -1;
+        DBG_PRINT("malloc failed\n");
+        return ENOMEM;
     }
 
     pVector->head = NULL;
@@ -42,7 +43,7 @@ int yramfs_vector_add(yramfs_vector_t *pVector,
     plink = (yramfs_vector_link_t*)kmalloc(sizeof(yramfs_vector_link_t),
                                            GFP_KERNEL);
     if(NULL == plink) {
-        return -1;
+        return ENOMEM;
     }
 
     plink->next = NULL;
@@ -196,6 +197,7 @@ int yramfs_vector_get_at(yramfs_vector_t *pVector,
     return 0;
 }
 
+/*
 int test_vector()
 {
     yramfs_vector_t *aVector = NULL;
@@ -261,3 +263,4 @@ int test_vector()
 
     return 0;
 }
+*/

@@ -9,13 +9,8 @@
 #include "yramfs_inode.h"
 #include "yramfs_utils.h"
 
-<<<<<<< HEAD
-MODULE_LICENSE("Yunfei");
-
-=======
 extern const struct inode_operations yramfs_dir_inode_operations;
 extern const struct file_operations yramfs_dir_operations;
->>>>>>> add support for readdir
 /*
  * @brief This function is called when the given inode is
  *  to be read

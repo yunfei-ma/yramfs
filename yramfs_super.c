@@ -9,6 +9,8 @@
 
 #include "yramfs_common.h"
 #include "yramfs_inode.h"
+#include "yramfs_super.h"
+#include "yramfs_dir.h"
 
 static const struct super_operations yramfs_ops;
 
@@ -32,7 +34,7 @@ int yramfs_fill_super(struct super_block *sb, void *data, int silent)
                                                 to represent the block size */
     sb->s_magic = YRAMFS_MAGIC; /* Filesystem magic number */
     sb->s_op = &yramfs_ops; /* Super block operations */
-    pInfo = kmalloc(sizeof(yramfs_sb_info), GFP_KERNEL);
+    pInfo = kmalloc(sizeof(yramfs_sb_info_t), GFP_KERNEL);
     if (NULL == pInfo) {
         return ENOMEM;
     }
@@ -47,6 +49,8 @@ int yramfs_fill_super(struct super_block *sb, void *data, int silent)
         return ENOMEM;
     }
     sb->s_root = d_alloc_root(rootNode);
+    yramfs_dir_add_path(sb->s_root, "..", DT_DIR);
+    yramfs_dir_add_path(sb->s_root, ".", DT_DIR);
     return 0;
 }
 

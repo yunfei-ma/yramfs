@@ -7,6 +7,7 @@
 #include "yramfs_inode.h"
 #include "yramfs_utils.h"
 #include "yramfs_super.h"
+#include "yramfs_dir.h"
 
 /*
  * @brief this function add a path to a dir's vector module
@@ -22,19 +23,28 @@ int yramfs_dir_add_path(struct inode *dir, char *path, unsigned char type)
     yramfs_dir_info_t       *pInfo = NULL;
     yramfs_vector_t         *pVector = NULL;
     yramfs_sb_info_t        *pSuperInfo  = NULL;
-    
+    int                      err = 0;
+
     if ((NULL == dir) || (NULL == path)) {
         return EINVAL;
     }
 
     pVector = (yramfs_vector_t*) dir->i_private;
+    if (NULL == pVector) {
+        err = yramfs_vector_create(&pVector);
+        dir->i_private = pVector;
+    }
+    if (err) {
+        DBG_PRINT("failed at creating vector%d", err);
+        return err;
+    }
     pSuperInfo = (yramfs_sb_info_t*)dir->i_sb->s_fs_info;
     pInfo = kzalloc(sizeof(yramfs_dir_info_t), GFP_KERNEL);
     strncpy(pInfo->name, path, YRAMFS_MAX_PATH_LEN);
     pInfo->ftype = type;
     pInfo->ino  = pSuperInfo->nodeSerialNum ++;
 
-    return yramfs_vector_add(pVector, (uint32_t)pInfo, kfree);
+    return yramfs_vector_add(pVector, (uint32_t)pInfo, (free_func_t)kfree);
 }
 
 /*
@@ -58,29 +68,18 @@ static int yramfs_dir_mknod(struct inode *dir, struct dentry *dentry,
         if (dir->i_mode & S_ISGID) {
             inode->i_gid = dir->i_gid;
             if (S_ISDIR(mode)){
-                yramfs_vector_t *pVector = NULL;
-            
-                error = yramfs_vector_create(&pVector);
-                if (error) {
-                    DBG_PRINT("failed at creating vector%d", error);
-                    return error;
-                }
-            
-                error = yramfs_dir_add_path(pVector, ".", DT_DIR);
+                error = yramfs_dir_add_path(dir, ".", DT_DIR);
                 if (error) {
                     DBG_PRINT("failed on adding path .");
-                    yramfs_vector_destroy(pVector);
                     return error;
                 }
 
-                error = yramfs_dir_add_path(pVector, "..", DT_DIR);
+                error = yramfs_dir_add_path(dir, "..", DT_DIR);
                 if (error) {
                     DBG_PRINT("failed on adding path '..'");
-                    yramfs_vector_destroy(pVector);
                     return error;
                 }
-            
-                dir->i_private = (void*)pVector;
+
                 inode->i_mode |= S_ISGID;
             }
         }
@@ -219,7 +218,8 @@ int yramfs_dir_readdir(struct file* fp, void* dirent, filldir_t filldir)
     int             err = 0;
     yramfs_dir_info_t *pInfo = NULL;
 
-    DBG_PRINT(" reading dir file=%s,%d ", dentry->d_name.name, file->f_pos);
+    DBG_PRINT(" reading dir file=%s,%d ", parentEntry->d_name.name,
+                                          currentFileIndex);
 
     pVector = parentNode->i_private;
     err = yramfs_vector_count(pVector, &fileCount);
