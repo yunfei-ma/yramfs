@@ -1,3 +1,13 @@
+usage:
+
+1. insert module
+    sudo insmod yramfs.ko
+2. mount file system
+    sudo mount -t yramfs none /mnt/yramfs
+3. unmount
+    sudo unmout /mnt/yramfs
+4. remove moudule
+    sudo rmmod yramfs
 
 The steps of registerring a file system with the kernel as a kernel module:
     1. During module initialization, kernel register the file system with a

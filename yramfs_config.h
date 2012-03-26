@@ -8,7 +8,7 @@
 #define  YRAMFS_CONFIG_INODE_DATA_BLOCKS       256
 
 #define  YRAMFS_CONFIG_MAX_FILESIZE            (YRAMFS_CONFIG_INODE_DATA_BLOCKS *\
-		                                        PAGE_CACHE_SIZE)
+                                                PAGE_CACHE_SIZE)
 
 #define  YRAMFS_CONFIG_BLOCK_SIZE_BITS         32
 

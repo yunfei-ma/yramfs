@@ -10,9 +10,10 @@
 #include "yramfs_common.h"
 #include "yramfs_vector.h"
 
-typedef struct _yramfs_dir_private_t{
-    yramfs_vector_t     *pVectorEntries;
-}yramfs_dir_private_t;
-
+typedef struct _yramfs_dir_info_t{
+    char            name[YRAMFS_MAX_PATH_LEN];
+    unsigned char   ftype;
+    ino_t           ino; // inode serial number
+}_yramfs_dir_info_t;
 
 #endif /* yramfs_dir_h_ */

@@ -6,6 +6,36 @@
 #include "yramfs_common.h"
 #include "yramfs_inode.h"
 #include "yramfs_utils.h"
+#include "yramfs_super.h"
+
+/*
+ * @brief this function add a path to a dir's vector module
+ *
+ * @param pVector  pointer to an instance of yramfs_vector_t 
+ * @param path     new path to be added
+ * @param type     type of this path, currently only file, folder is supported
+ *
+ * @returns error codes
+ */
+int yramfs_dir_add_path(struct inode *dir, char *path, unsigned char type)
+{
+    yramfs_dir_info_t       *pInfo = NULL;
+    yramfs_vector_t         *pVector = NULL;
+    yramfs_sb_info_t        *pSuperInfo  = NULL;
+    
+    if ((NULL == dir) || (NULL == path)) {
+        return EINVAL;
+    }
+
+    pVector = (yramfs_vector_t*) dir->i_private;
+    pSuperInfo = (yramfs_sb_info_t*)dir->i_sb->s_fs_info;
+    pInfo = kzalloc(sizeof(yramfs_dir_info_t), GFP_KERNEL);
+    strncpy(pInfo->name, path, YRAMFS_MAX_PATH_LEN);
+    pInfo->ftype = type;
+    pInfo->ino  = pSuperInfo->nodeSerialNum ++;
+
+    return yramfs_vector_add(pVector, (uint32_t)pInfo, kfree);
+}
 
 /*
  * @brief This function creates a new file, allocate an inode and instantiate
@@ -21,20 +51,44 @@
 static int yramfs_dir_mknod(struct inode *dir, struct dentry *dentry,
                             int mode, dev_t dev)
 {
-	struct inode * inode = yramfs_get_inode(dir->i_sb, dir, mode, dev);
-	int error = -ENOSPC;
-    
-	if (inode) {
-		if (dir->i_mode & S_ISGID) {
-			inode->i_gid = dir->i_gid;
-			if (S_ISDIR(mode))
-				inode->i_mode |= S_ISGID;
-		}
-		d_instantiate(dentry, inode);
-		dget(dentry);	/* Extra count - pin the dentry in core */
-		error = 0;
-	}
-	return error;
+    struct inode * inode = yramfs_get_inode(dir->i_sb, dir, mode, dev);
+    int error = ENOSPC;
+
+    if (inode) {
+        if (dir->i_mode & S_ISGID) {
+            inode->i_gid = dir->i_gid;
+            if (S_ISDIR(mode)){
+                yramfs_vector_t *pVector = NULL;
+            
+                error = yramfs_vector_create(&pVector);
+                if (error) {
+                    DBG_PRINT("failed at creating vector%d", error);
+                    return error;
+                }
+            
+                error = yramfs_dir_add_path(pVector, ".", DT_DIR);
+                if (error) {
+                    DBG_PRINT("failed on adding path .");
+                    yramfs_vector_destroy(pVector);
+                    return error;
+                }
+
+                error = yramfs_dir_add_path(pVector, "..", DT_DIR);
+                if (error) {
+                    DBG_PRINT("failed on adding path '..'");
+                    yramfs_vector_destroy(pVector);
+                    return error;
+                }
+            
+                dir->i_private = (void*)pVector;
+                inode->i_mode |= S_ISGID;
+            }
+        }
+        d_instantiate(dentry, inode);
+        dget(dentry);	/* Extra count - pin the dentry in core */
+        error = 0;
+    }
+    return error;
 }
 
 /*
@@ -52,10 +106,10 @@ static int yramfs_dir_mknod(struct inode *dir, struct dentry *dentry,
 static int yramfs_dir_mkdir(struct inode * dir, struct dentry * dentry,
                              int mode)
 {
-	int retval = yramfs_dir_mknod(dir, dentry, mode | S_IFDIR, 0);
-	if (!retval)
-		dir->i_nlink++;
-	return retval;
+    int retval = yramfs_dir_mknod(dir, dentry, mode | S_IFDIR, 0);
+    if (!retval)
+        dir->i_nlink++;
+    return retval;
 }
 
 /*
@@ -100,7 +154,7 @@ static int yramfs_dir_create(struct inode *dir, struct dentry *dentry,
  *
  * @returns dentry
  */
-static struct dentry * yramfs_inode_lookup(struct inode *parent_inode,
+static struct dentry * yramfs_dir_inode_lookup(struct inode *parent_inode,
                             struct dentry *entry, struct nameidata *name)
 {
     DBG_PRINT(" looking up %s... ", entry->d_name.name);
@@ -110,7 +164,7 @@ static struct dentry * yramfs_inode_lookup(struct inode *parent_inode,
     if(dentry->d_name.len != strlen("hello.txt") ||
        strncmp(dentry->d_name.name, "hello.txt", dentry->d_name.len))
         return ERR_PTR(-ENOENT);
-    
+
     file_inode = iget(parent_inode->i_sb, FILE_INODE_NUMBER);
     if(!file_inode)
         return ERR_PTR(-EACCES);
@@ -123,27 +177,27 @@ static struct dentry * yramfs_inode_lookup(struct inode *parent_inode,
     return simple_lookup(parent_inode, entry, name);
 }/*
 my_lookup(struct inode *parent_inode, struct dentry *dentry, struct nameidata *nameidata) {
-    
+
     printk("my_lookup:\t");
     printk(dentry->d_name.name);
     printk("\n");
-    
+
     // i is a global variable.
     struct inode *file_inode iget(parent_inode->i_sb, FILE_INODE_NUMBER + i);
     i++;
-    
+
     if(!file_inode) {
         printk("Can't allocate the inode\n");
         return ERR_PTR(-EACCES);
     }
-    
+
     file_inode->i_size = file_size; // some fixed value
     file_inode->i_mode = S_IFREG|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH|DT_DIR;
-    
+
     file_inode->i_op = &my_iops;
     file_inode->i_sb = parent_inode->i_sb;
     d_add(dentry, file_inode);
-    
+
 out:
     return NULL;
 }*/
@@ -153,17 +207,52 @@ out:
  */
 int yramfs_dir_readdir(struct file* fp, void* dirent, filldir_t filldir)
 {
-    struct dentry* dentry = fp->f_dentry;
-    DBG_PRINT(" reading dir file=%s... ", dentry->d_name.name);
-    return -1;
+    struct dentry  *parentEntry = fp->f_dentry;
+    struct inode   *parentNode = parentEntry->d_inode;
+    uint32_t   currentFileIndex = fp->f_pos;
+    uint32_t   fileCount, addedCount = 0;
+    ino_t           dino;
+    int stored = 0;
+    unsigned char ftype=DT_REG;
+    char filename[64];
+    yramfs_vector_t  *pVector = NULL;
+    int             err = 0;
+    yramfs_dir_info_t *pInfo = NULL;
+
+    DBG_PRINT(" reading dir file=%s,%d ", dentry->d_name.name, file->f_pos);
+
+    pVector = parentNode->i_private;
+    err = yramfs_vector_count(pVector, &fileCount);
+    if (err || (0 == fileCount)) {
+        DBG_PRINT("failed to count vector%d", err);
+        return ENOSPC;
+    }
+    
+    for (currentFileIndex = fp->f_pos; currentFileIndex < fileCount;
+         currentFileIndex++) {
+        err = yramfs_vector_get_at(pVector, currentFileIndex, (void*)&pInfo);
+        if (err) {
+            DBG_PRINT("failed to get dir info:%d", err);
+            return err;
+        }
+        DBG_PRINT("fill dir %s", pInfo->name);
+        err = filldir(dirent,pInfo->name,strlen(pInfo->name),currentFileIndex,
+                      pInfo->ino,pInfo->ftype);
+        if(err) {
+            return addedCount;
+        }
+        addedCount ++;
+    }
+
+    return 0;
 }
 
-static struct inode_operations yramfs_dir_inode_operations = {
-	.create		= yramfs_dir_create,
-	.lookup		= yramfs_inode_lookup,
-	.mkdir		= yramfs_dir_mkdir,
-	.rmdir		= simple_rmdir,
-	.mknod		= yramfs_dir_mknod
+const struct inode_operations yramfs_dir_inode_operations = {
+    .create     = yramfs_dir_create,
+    .lookup     = yramfs_dir_inode_lookup,
+    .mkdir      = yramfs_dir_mkdir,
+    .rmdir      = simple_rmdir,
+    .mknod      = yramfs_dir_mknod
 };
 
 

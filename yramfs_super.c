@@ -17,23 +17,33 @@ static const struct super_operations yramfs_ops;
  *      with 's_op' and 's_root' initialized
  *
  * @param sb    super_block instance to be initialized
- * @param data  
+ * @param data
  * @param silent
  */
 int yramfs_fill_super(struct super_block *sb, void *data, int silent)
 {
-    struct inode *rootNode = NULL;
+    struct inode        *rootNode = NULL;
+    yramfs_sb_info_t    *pInfo    = NULL;
+
+    DBG_PRINT("fill super...");
     sb->s_maxbytes = YRAMFS_CONFIG_MAX_FILESIZE; /* Maximum file size */
     sb->s_blocksize = PAGE_CACHE_SIZE; /* Block size */
     sb->s_blocksize_bits = YRAMFS_CONFIG_BLOCK_SIZE_BITS; /* Number of bits used
                                                 to represent the block size */
     sb->s_magic = YRAMFS_MAGIC; /* Filesystem magic number */
     sb->s_op = &yramfs_ops; /* Super block operations */
-    sb->s_fs_info = NULL; /* Filesystem private data */
+    pInfo = kmalloc(sizeof(yramfs_sb_info), GFP_KERNEL);
+    if (NULL == pInfo) {
+        return ENOMEM;
+    }
+
+    pInfo->nodeSerialNum = 1;
+    sb->s_fs_info = pInfo; /* Filesystem private data */
 
     /* initialize root node */
     rootNode = yramfs_get_inode(sb, NULL, S_IFDIR|0755, 0);
     if(NULL == rootNode) {
+        DBG_PRINT("get root node failed");
         return ENOMEM;
     }
     sb->s_root = d_alloc_root(rootNode);
@@ -42,17 +52,17 @@ int yramfs_fill_super(struct super_block *sb, void *data, int silent)
 
 int yramfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
-//	struct super_block *sb = dentry->d_sb;
+//    struct super_block *sb = dentry->d_sb;
 
-	buf->f_type =  YRAMFS_MAGIC;
-	buf->f_bsize = PAGE_CACHE_SIZE;
-	buf->f_blocks = 2048;
-	buf->f_bfree = 0;
-	buf->f_bavail = 0;
-	buf->f_files = 5;
-	buf->f_ffree = 0;
-	buf->f_namelen = YRAMFS_MAX_PATH_LEN;
-	return 0;
+    buf->f_type =  YRAMFS_MAGIC;
+    buf->f_bsize = PAGE_CACHE_SIZE;
+    buf->f_blocks = 2048;
+    buf->f_bfree = 0;
+    buf->f_bavail = 0;
+    buf->f_files = 5;
+    buf->f_ffree = 0;
+    buf->f_namelen = YRAMFS_MAX_PATH_LEN;
+    return 0;
 }
 
 /*
@@ -65,7 +75,7 @@ static void yramfs_super_put(struct super_block* sb)
 }
 
 static const struct super_operations yramfs_ops = {
-	.put_super  = yramfs_super_put,
+    .put_super  = yramfs_super_put,
     .write_inode = yramfs_inode_write,
     .put_super = yramfs_super_put,
     .statfs = yramfs_statfs

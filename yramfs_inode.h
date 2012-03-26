@@ -21,19 +21,19 @@ typedef struct ramfs_inode_info {
  *  to be read
  *  it converts the given inode number into block number and
  *  read the inode's info from the 'memory block'
- * 
+ *
  * @param aNode an instance of struct inode
  * @returns none
  */
 struct inode *yramfs_get_inode(struct super_block *sb,
-				const struct inode *dir, int mode, dev_t dev);
+                const struct inode *dir, int mode, dev_t dev);
 
 /*
  * @brief This function is called when the given inode is
  *  to be read
  *  it converts the given inode number into block number and
  *  read the inode's info from the 'memory block'
- * 
+ *
  * @param aNode an instance of struct inode
  * @returns none
  */

@@ -9,7 +9,7 @@
 /* Begin PBXFileReference section */
 		1880CFD5151D99B7009A4321 /* yramfs_address_space.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = yramfs_address_space.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		1880CFD6151D99B7009A4321 /* yramfs_address_space.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = yramfs_address_space.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		1880CFD7151D99B7009A4321 /* yramfs_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = yramfs_config.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		1880CFD7151D99B7009A4321 /* yramfs_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = yramfs_config.h; sourceTree = "<group>"; };
 		1880CFD8151D99B7009A4321 /* yramfs_dir.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; lineEnding = 2; path = yramfs_dir.c; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
 		1880CFD9151D99B7009A4321 /* yramfs_dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yramfs_dir.h; sourceTree = "<group>"; };
 		1880CFDA151D99B7009A4321 /* yramfs_file.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = yramfs_file.c; sourceTree = "<group>"; };
@@ -26,12 +26,16 @@
 		18F005A4151E6CAC009B4FDD /* vfs-readme.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "vfs-readme.txt"; sourceTree = "<group>"; };
 		18F005A9151F07D3009B4FDD /* yramfs_vector.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = yramfs_vector.c; sourceTree = "<group>"; };
 		18F005AB151F07F3009B4FDD /* yramfs_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yramfs_vector.h; sourceTree = "<group>"; };
+		18F005E7152093F1009B4FDD /* yramfs_common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yramfs_common.h; sourceTree = "<group>"; };
+		18F005E8152093FB009B4FDD /* yramfs_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yramfs_config.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		1880CFCC151D9665009A4321 = {
 			isa = PBXGroup;
 			children = (
+				18F005E8152093FB009B4FDD /* yramfs_config.h */,
+				18F005E7152093F1009B4FDD /* yramfs_common.h */,
 				18F005A4151E6CAC009B4FDD /* vfs-readme.txt */,
 				1880D2B9151DC572009A4321 /* yramfs_memory.c */,
 				1880CFE3151D99CC009A4321 /* readme */,

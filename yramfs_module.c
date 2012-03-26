@@ -13,6 +13,7 @@
 #include "yramfs_common.h"
 #include "yramfs_super.h"
 
+MODULE_LICENSE("GPL");
 /*
  * @brief this function make a request to mount a device onto a directory
  *        in filespace, the VFS will call the 'get_sb' method to get super block
@@ -25,6 +26,7 @@
 struct dentry* yramfs_mount(struct file_system_type *fs, int flags,
                             const char *dev_name, void *data)
 {
+    DBG_PRINT("****\n****\n****\n mount...");
     return mount_single(fs, flags, data, yramfs_fill_super);
 }
 
@@ -43,7 +45,15 @@ static struct file_system_type yramfs = {
  * 'yramfs' to kernel, and allocate super block
  */
 static int __init yramfs_init(void){
-    return register_filesystem(&yramfs);
+    int ret = 0;
+
+    DBG_PRINT("register file system");
+    ret = register_filesystem(&yramfs);
+    if(0 != ret) {
+        DBG_PRINT("register file system failed:%d", ret);
+        return ret;
+    }
+    return ret;
 }
 
 /*
@@ -51,6 +61,7 @@ static int __init yramfs_init(void){
  * on the file system unmounting, and will release super block
  */
 static void __exit yramfs_exit(void){
+    DBG_PRINT("module exit");
     unregister_filesystem(&yramfs);
 }
 

@@ -16,12 +16,12 @@ int yramfs_memory_initialize(void *data)
     pRamfsPool = kmem_cache_create("ramfsPool",
                                    sizeof(yramfs_inode_info_t),
                                    0, SLAB_PANIC, NULL, NULL);
-	return 0;
+    return 0;
 }
 
 void yramfs_memory_deinitialize(void)
 {
-	kmem_cache_destroy(pRamfsPool);
+    kmem_cache_destroy(pRamfsPool);
 }
 
 void *yramfs_alloc(uint32_t size)
@@ -31,7 +31,7 @@ void *yramfs_alloc(uint32_t size)
         DBG_PRINT("pool is not initialized");
         return NULL;
     }
-    
+
     ptr = kmem_cache_alloc(pRamfsPool, SLAB_KERNEL);
     DBG_PRINT("mem -- alloc %x, %d", ptr, size);
     return ptr;
