@@ -1,0 +1,19 @@
+input file is /mnt/yramfs/yoo
+---------------------
+start sequence test
+---------------------
+writing to file:/mnt/yramfs/yoo-0
+sequence test end. 
+	duration is 3209 ms
+---------------------
+start concurrency open write test
+---------------------
+writing to file:/mnt/yramfs/yoo-1
+concurrency open write test end. 
+	duration is 2824 ms
+---------------------
+start concurrency write test
+---------------------
+writing to file:/mnt/yramfs/yoo-2
+concurrency write test end. 
+	duration is 105 ms

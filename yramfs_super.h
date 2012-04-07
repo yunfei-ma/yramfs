@@ -8,7 +8,7 @@
 #ifndef _yramfs_super_h
 #define _yramfs_super_h
 
-#define YRAMFS_ROOT_INODE_NUMBER     0
+#define YRAMFS_ROOT_INODE_NUMBER                0
 
 typedef struct _yramfs_sb_info {
     uint32_t     nodeSerialNum;         /* total number of inode */

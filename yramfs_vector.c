@@ -11,7 +11,7 @@ int yramfs_vector_create(yramfs_vector_t **ppVector)
 {
     yramfs_vector_t    *pVector = NULL;
 
-    pVector = (yramfs_vector_link_t*)kmalloc(sizeof(yramfs_vector_t),
+    pVector = (yramfs_vector_t*)kmalloc(sizeof(yramfs_vector_t),
                                              GFP_KERNEL);
     if (NULL == pVector) {
         DBG_PRINT("malloc failed\n");
@@ -19,6 +19,7 @@ int yramfs_vector_create(yramfs_vector_t **ppVector)
     }
 
     pVector->head = NULL;
+    pVector->tail = NULL;
     pVector->count = 0;
     *ppVector = pVector;
 
@@ -50,7 +51,7 @@ int yramfs_vector_add(yramfs_vector_t *pVector,
     plink->data = data;
     plink->free = free;
 
-    // add first plink 
+    // add first plink
     if((pVector->head == pVector->tail)
                && (pVector->head == NULL)) {
         pVector->head = plink;
@@ -77,7 +78,7 @@ int yramfs_vector_add(yramfs_vector_t *pVector,
  */
 int yramfs_vector_remove_data(yramfs_vector_t *pVector, uint32_t data)
 {
-   yramfs_vector_link_t *plink = NULL, *plinkPre = NULL; 
+   yramfs_vector_link_t *plink = NULL, *plinkPre = NULL;
 
    if (NULL == pVector) {
         return -1;
@@ -111,7 +112,7 @@ int yramfs_vector_remove_data(yramfs_vector_t *pVector, uint32_t data)
         }
         plink = plink->next;
     }
-    
+
     return 0;
 }
 
@@ -126,13 +127,13 @@ int yramfs_vector_remove_data(yramfs_vector_t *pVector, uint32_t data)
 int yramfs_vector_remove_all(yramfs_vector_t *pVector)
 {
     yramfs_vector_link_t *plink = NULL, *plinkTmp = NULL;
-    
+
     if (NULL == pVector) {
         return -1;
     }
-    
+
     plink = pVector->head;
-    
+
     while (plink) {
         plinkTmp = plink;
         plink = plink->next;
@@ -159,7 +160,7 @@ int yramfs_vector_count(yramfs_vector_t *pVector, uint32_t *pCount)
     if (NULL == pVector || (NULL == pCount)) {
         return -1;
     }
-    
+
     *pCount = pVector->count;
     return 0;
 }
@@ -182,7 +183,7 @@ int yramfs_vector_get_at(yramfs_vector_t *pVector,
     if (NULL == pVector) {
         return -1;
     }
-    
+
     if (pVector->count <= index) {
         return -1;
     }
@@ -242,7 +243,7 @@ int test_vector()
         printf("\t--get value %d(%d), ret%d\n", value, index, ret);
         index --;
     }
-    
+
     printf("remove middle and dump...\n");
     yramfs_vector_remove_data(aVector, 4);
     yramfs_vector_count(aVector, &index);
@@ -251,7 +252,7 @@ int test_vector()
         printf("\t--get value %d(%d), ret%d\n", value, index, ret);
         index --;
     }
-    
+
     printf("remove all\n");
     ret = yramfs_vector_remove_all(aVector);
     if (0 != ret) {

@@ -26,7 +26,7 @@ MODULE_LICENSE("GPL");
 struct dentry* yramfs_mount(struct file_system_type *fs, int flags,
                             const char *dev_name, void *data)
 {
-    DBG_PRINT("****\n****\n****\n mount...");
+    DBG_PRINT("mount...");
     return mount_single(fs, flags, data, yramfs_fill_super);
 }
 

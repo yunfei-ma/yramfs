@@ -49,7 +49,7 @@ void yramfs_inode_read(struct inode* aNode);
  * @returns error codes
  *
  */
-int yramfs_inode_write(struct inode* aNode, int do_sync);
+int yramfs_inode_write(struct inode* aNode, struct writeback_control *wbc);
 
 /*
  * @brief this function is called when the given inode is to be deleted

@@ -14,4 +14,6 @@
 
 #define  YRAMFS_MAX_PATH_LEN                   64
 
+#define  YRAMFS_DEFAULT_MODE                   0777
+
 #endif

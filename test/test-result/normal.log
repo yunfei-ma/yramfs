@@ -1,0 +1,19 @@
+input file is /home/talon/normal
+---------------------
+start sequence test
+---------------------
+writing to file:/home/talon/normal-0
+sequence test end. 
+	duration is 2955 ms
+---------------------
+start concurrency open write test
+---------------------
+writing to file:/home/talon/normal-1
+concurrency open write test end. 
+	duration is 3916 ms
+---------------------
+start concurrency write test
+---------------------
+writing to file:/home/talon/normal-2
+concurrency write test end. 
+	duration is 92 ms

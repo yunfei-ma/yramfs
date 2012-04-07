@@ -43,7 +43,7 @@ int yramfs_fill_super(struct super_block *sb, void *data, int silent)
     sb->s_fs_info = pInfo; /* Filesystem private data */
 
     /* initialize root node */
-    rootNode = yramfs_get_inode(sb, NULL, S_IFDIR|0755, 0);
+    rootNode = yramfs_get_inode(sb, NULL, S_IFDIR|0777, 0);
     if(NULL == rootNode) {
         DBG_PRINT("get root node failed");
         return ENOMEM;
@@ -54,10 +54,17 @@ int yramfs_fill_super(struct super_block *sb, void *data, int silent)
     return 0;
 }
 
+/*
+ * @brief Called to state the fs
+ *
+ * @param dentry    entry to be state
+ * @param buf         kstatfs data
+ */
 int yramfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 //    struct super_block *sb = dentry->d_sb;
 
+    DBG_PRINT("stat fs...");
     buf->f_type =  YRAMFS_MAGIC;
     buf->f_bsize = PAGE_CACHE_SIZE;
     buf->f_blocks = 2048;
@@ -70,18 +77,17 @@ int yramfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 }
 
 /*
- * Called when the filesystem is unmounted
- * Release the memory for the in-memory super block as well as
- * free the block heads used for reading the super block
+ * @brief Called when the filesystem is unmounted
+ *              Release the memory for the in-memory super block as well as
+ *              free the block heads used for reading the super block
  */
 static void yramfs_super_put(struct super_block* sb)
 {
 }
 
 static const struct super_operations yramfs_ops = {
-    .put_super  = yramfs_super_put,
-    .write_inode = yramfs_inode_write,
-    .put_super = yramfs_super_put,
-    .statfs = yramfs_statfs
-
+    .put_super      = yramfs_super_put,
+    .write_inode    = yramfs_inode_write,
+    .put_super      = yramfs_super_put,
+    .statfs         = yramfs_statfs,
 };
