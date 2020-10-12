@@ -1,6 +1,19 @@
 #include "yramfs_common.h"
 #include "yramfs_vector.h"
 
+typedef struct _yramfs_vector_link_t{
+    struct _yramfs_vector_link_t    *next;
+    uint32_t                        data;
+    free_func_t                     free;
+}yramfs_vector_link_t;
+
+struct _yramfs_vector_t{
+    yramfs_vector_link_t    *head;
+    yramfs_vector_link_t    *tail;
+    uint32_t                 count;
+};
+
+
 /*
  * @brief this function create a vector object
  * @param ppVector   out put new created object
