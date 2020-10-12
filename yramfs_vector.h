@@ -11,18 +11,7 @@
 
 typedef void (*free_func_t)(void *data);
 
-typedef struct _yramfs_vector_link_t{
-    struct _yramfs_vector_link_t    *next;
-    uint32_t                        data;
-    free_func_t                     free;
-}yramfs_vector_link_t;
-
-typedef struct _yramfs_vector_t{
-    yramfs_vector_link_t    *head;
-    yramfs_vector_link_t    *tail;
-    uint32_t                 count;
-}yramfs_vector_t;
-
+typedef struct _yramfs_vector_t yramfs_vector_t;
 
 /*
  * @brief this function create a vector object
